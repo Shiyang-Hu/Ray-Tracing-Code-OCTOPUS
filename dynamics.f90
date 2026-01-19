@@ -15,12 +15,28 @@ subroutine event_horizon(r_e)
     real*8 r_e
     real*8 r_0,r
     real*8 f,df
+    real*8 deltar,veff_1,veff_0
     real*8::error=1d-15
     real*8,external::df_1st
-    integer i,max_n
+    integer i,max_n,j
     i=0
     max_n=1000
-    r=2.5d0
+    r=15d0
+    deltar=0.1d0
+    call metric_potential(r,veff_0)
+    do while(.true.)
+        r=r-deltar
+        call metric_potential(r,veff_1)
+        if(r.le.0d0.or.isnan(veff_1))then
+            write(6,*)"The current parameters do not yield a black hole solution. Please adjust the metric parameters."
+            stop 
+            else
+            end if
+        if(veff_1*veff_0.le.0d0)exit
+        veff_0=veff_1
+    end do
+    write(6,*)"The guess value of the event horizon radius calculated by Newton iteration is",r
+    !r=2.5d0
     do while(.true.)
         r_0=r
         call metric_potential(r,f)
@@ -145,25 +161,25 @@ subroutine diff_ps_function(r,df)
     end subroutine
     
 subroutine difffunction(u,diff_u)
-implicit none
-real*8,dimension(8)::u,diff_u
-real*8 t,r,theta,phi,p_t,p_r,p_theta,p_phi
-real*8 g00_r,g11_r,g22_r,g33_r,g33_theta
-real*8 g00,g11,g22,g33
-call anti_dimensional(u,t,r,theta,phi,p_t,p_r,p_theta,p_phi)
-!if(theta.lt.1d-8)theta=1d-8
-call diff_contravariant_metric(r,theta,g00_r,g11_r,g22_r,g33_r,g33_theta)
-call contravariant_metric(r,theta,g00,g11,g22,g33)
-diff_u(1)=-(g00*p_t)
-diff_u(2)=-(g11*p_r)
-diff_u(3)=-(g22*p_theta)
-diff_u(4)=-(g33*p_phi)
-diff_u(5)=0d0
-diff_u(6)=-(-(1d0/2d0)*(g00_r*p_t*p_t+g11_r*p_r*p_r+g22_r*p_theta*p_theta+g33_r*p_phi*p_phi))
-diff_u(7)=-(-(1d0/2d0)*(g33_theta*p_phi*p_phi))
-diff_u(8)=0d0
-return
-end subroutine  
+    implicit none
+    real*8,dimension(8)::u,diff_u
+    real*8 t,r,theta,phi,p_t,p_r,p_theta,p_phi
+    real*8 g00_r,g11_r,g22_r,g33_r,g33_theta
+    real*8 g00,g11,g22,g33
+    call anti_dimensional(u,t,r,theta,phi,p_t,p_r,p_theta,p_phi)
+    !if(theta.lt.1d-8)theta=1d-8
+    call diff_contravariant_metric(r,theta,g00_r,g11_r,g22_r,g33_r,g33_theta)
+    call contravariant_metric(r,theta,g00,g11,g22,g33)
+    diff_u(1)=-(g00*p_t)
+    diff_u(2)=-(g11*p_r)
+    diff_u(3)=-(g22*p_theta)
+    diff_u(4)=-(g33*p_phi)
+    diff_u(5)=0d0
+    diff_u(6)=-(-(1d0/2d0)*(g00_r*p_t*p_t+g11_r*p_r*p_r+g22_r*p_theta*p_theta+g33_r*p_phi*p_phi))
+    diff_u(7)=-(-(1d0/2d0)*(g33_theta*p_phi*p_phi))
+    diff_u(8)=0d0
+    return
+    end subroutine  
     
 subroutine covariant_metric(r,theta,g_00,g_11,g_22,g_33)
     implicit none
