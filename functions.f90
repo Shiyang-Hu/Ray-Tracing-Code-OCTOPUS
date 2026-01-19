@@ -8,12 +8,12 @@ subroutine black_hole_features(r_eh,r_p,b_p,r_isco,angular_diameter)
     call isco_orbit(r_isco)
     call impact_parameter(r_p,b_p)
     call angular_obs(b_p,angular_diameter)
-    write(*,*)"*******************************************************************************"
-    write(*,*)"Radius of the Event Horizon:",r_eh,"M"
-    write(*,*)"Radius of the Photon Sphere:",r_p,"M"
-    write(*,*)"Radius of the Black Hole Shadow (critical curve):",b_p,"M"
-    write(*,*)"Diameter of the Black Hole Shadow in uas:",angular_diameter,"uas"
-    write(*,*)"Radius of the Innermost Stable Circular Orbit:",r_isco,"M"
+    write(6,*)"*******************************************************************************"
+    write(6,*)"Radius of the Event Horizon:",r_eh,"M"
+    write(6,*)"Radius of the Photon Sphere:",r_p,"M"
+    write(6,*)"Radius of the Black Hole Shadow (critical curve):",b_p,"M"
+    write(6,*)"Diameter of the Black Hole Shadow in uas:",angular_diameter,"uas"
+    write(6,*)"Radius of the Innermost Stable Circular Orbit:",r_isco,"M"
     return
     end subroutine
     
@@ -66,7 +66,7 @@ subroutine hamiltonian_error(x_screen,y_screen,r_eh,r_p)
         if(vector(2).ge.observer)exit
     end do
     call hamiltonian(vector,hami)
-    write(15,*)x_screen,y_screen,dlog10(dabs(hami)+1d-16)
+    write(17,*)x_screen,y_screen,dlog10(dabs(hami)+1d-16)
     return
     end subroutine
     
@@ -236,11 +236,7 @@ subroutine redshift_factor(x_screen,y_screen,r_eh,r_p,r_isco)
                 redshift(hit)=vector(5)/(vector(5)*t_dot+vector(8)*phi_dot)
             else
                 call motion_constant(r_isco,e_isco,l_isco)
-                if(dabs(r_isco-rs(hit)).ge.0.001d0)then
-                    call infalling_velocity(rs(hit),math_pi/2d0,e_isco,l_isco,r_dot)
-                else
-                    r_dot=0d0
-                end if
+                r_dot=-dsqrt(2d0/3d0/r_isco)*(r_isco/rs(hit)-1d0)**(3d0/2d0)
                 call covariant_metric(rs(hit),math_pi/2d0,g_00,g_11,g_22,g_33)
                 t_dot=-e_isco/g_00
                 phi_dot=l_isco/g_33
@@ -254,7 +250,7 @@ subroutine redshift_factor(x_screen,y_screen,r_eh,r_p,r_isco)
         write(1,*)x_screen,y_screen,-1
     else
         do i=1,hit,1
-            file_name=i+4
+            file_name=i+6
             write(file_name,*)x_screen,y_screen,redshift(i)
         end do
     end if
@@ -272,7 +268,7 @@ subroutine image(x_screen,y_screen,r_eh,r_p,r_isco)
     real*8 intensity1,intensity2
     real*8 g_00,g_11,g_22,g_33
     real*8 e,l,e_isco,l_isco
-    real*8 t_dot,r_dot,phi_dot
+    real*8 t_dot,r_dot,phi_dot,potential
     real*8 step
     integer i,hit
     integer file_name
@@ -309,11 +305,7 @@ subroutine image(x_screen,y_screen,r_eh,r_p,r_isco)
                 redshift(hit)=vector(5)/(vector(5)*t_dot+vector(8)*phi_dot)
             else
                 call motion_constant(r_isco,e_isco,l_isco)
-                if(dabs(r_isco-rs(hit)).ge.0.001d0)then
-                    call infalling_velocity(rs(hit),math_pi/2d0,e_isco,l_isco,r_dot)
-                else
-                    r_dot=0d0
-                end if
+                r_dot=-dsqrt(2d0/3d0/r_isco)*(r_isco/rs(hit)-1d0)**(3d0/2d0)
                 call covariant_metric(rs(hit),math_pi/2d0,g_00,g_11,g_22,g_33)
                 t_dot=-e_isco/g_00
                 phi_dot=l_isco/g_33
@@ -327,7 +319,7 @@ subroutine image(x_screen,y_screen,r_eh,r_p,r_isco)
         write(1,*)x_screen,y_screen,-1
     else
         do i=1,hit,1
-            file_name=i+4
+            file_name=i+6
             write(file_name,*)x_screen,y_screen,redshift(i)
         end do
     end if
@@ -348,8 +340,8 @@ subroutine image(x_screen,y_screen,r_eh,r_p,r_isco)
         intensity1=flux1(1)*redshift(1)**3d0+(2d0/3d0)*flux1(2)*redshift(2)**3d0+(2d0/3d0)*flux1(3)*redshift(3)**3d0+(2d0/3d0)*flux1(4)*redshift(4)**3d0
         intensity2=flux2(1)*redshift(1)**3d0+(2d0/3d0)*flux2(2)*redshift(2)**3d0+(2d0/3d0)*flux2(3)*redshift(3)**3d0+(2d0/3d0)*flux2(4)*redshift(4)**3d0
     end select
-    write(9,*)x_screen,y_screen,intensity1
-    write(10,*)x_screen,y_screen,intensity2
+    write(11,*)x_screen,y_screen,intensity1
+    write(12,*)x_screen,y_screen,intensity2
     write(4,*)x_screen,y_screen,hit
     return
     end subroutine                
@@ -391,19 +383,19 @@ subroutine light_curves(x,y,delta_x,delta_y,r_eh)
             call timestep(t_int,interval)
             call rksixth(particle,interval)
             if(particle(2).le.(r_eh+hit_error))then
-                write(*,*)"*********************************************************************"
-                write(*,*)"WARNING"
-                write(*,*)"The hot-spot is approaching event horizon!"
-                write(*,*)"Calculation stop!"
-                write(*,*)"Please change the initial conditions of the hot-spot and try again."
+                write(6,*)"*********************************************************************"
+                write(6,*)"WARNING"
+                write(6,*)"The hot-spot is approaching event horizon!"
+                write(6,*)"Calculation stop!"
+                write(6,*)"Please change the initial conditions of the hot-spot and try again."
                 stop
             else
             end if
             call spherical_transfer(particle,x_m,y_m,z_m)
         end do
         call gravitational_waves(particle(2),particle(3),particle(4),h_plus,h_cross)
-        write(13,*)x_m,y_m,z_m
-        write(16,*)dabs(t_int),h_plus,h_cross
+        write(15,*)x_m,y_m,z_m
+        write(18,*)dabs(t_int),h_plus,h_cross
         path_data(i,1)=particle(1)
         path_data(i,2)=x_m
         path_data(i,3)=y_m
@@ -456,9 +448,9 @@ subroutine geodesic_tracing(x,y,r_eh,path_data,r_max,r_min)
                 r_1=dsqrt((x_p-path_data(m,2))**2d0+(y_p-path_data(m,3))**2d0+(z_p-path_data(m,4))**2d0)
                 if(r_0.le.source_radius.and.r_1.ge.source_radius)then
                     hits=hits+1
-                    !write(*,*)"photon + 1"
-                    if(hits==1)write(11,*)x,y,dabs(path_data(m,1))+dabs(photon(1))
-                    write(12,*)dabs(path_data(m,1))+dabs(photon(1))
+                    !write(6,*)"photon + 1"
+                    if(hits==1)write(13,*)x,y,dabs(path_data(m,1))+dabs(photon(1))
+                    write(14,*)dabs(path_data(m,1))+dabs(photon(1))
                 else
                 end if
             end do
@@ -506,15 +498,15 @@ subroutine lensing_image(x_screen,y_screen,r_eh)
         end if
         if(vector(2).ge.observer)exit   
     end do
-    !write(*,*)x_screen,y_screen,orbit
+    !write(6,*)x_screen,y_screen,orbit
     if(orbit.ge.1)then
         do i=1,orbit,1
             call source_profile(path_data(i,1),path_data(i,2),path_data(i,3),source_x,source_y,source_z,j_v,alpha_v)
             luminosity=luminosity+path_data(i,4)*(j_v-alpha_v*luminosity)
         end do
-        write(14,*)x_screen,y_screen,luminosity
+        write(16,*)x_screen,y_screen,luminosity
     else
-        write(14,*)x_screen,y_screen,0d0
+        write(16,*)x_screen,y_screen,0d0
     end if
     return
     end subroutine
@@ -537,17 +529,17 @@ subroutine lensing_animation(x,y,delta_x,delta_y,r_eh)
             call timestep(t_int,interval)
             call rksixth(particle,interval)
             if(particle(2).le.(r_eh+hit_error))then
-                write(*,*)"*********************************************************************"
-                write(*,*)"WARNING"
-                write(*,*)"The hot-spot is approaching event horizon!"
-                write(*,*)"Calculation stop!"
-                write(*,*)"Please change the initial conditions of the hot-spot and try again."
+                write(6,*)"*********************************************************************"
+                write(6,*)"WARNING"
+                write(6,*)"The hot-spot is approaching event horizon!"
+                write(6,*)"Calculation stop!"
+                write(6,*)"Please change the initial conditions of the hot-spot and try again."
                 stop
             else
             end if
             call spherical_transfer(particle,x_m,y_m,z_m)
         end do
-        write(13,*)x_m,y_m,z_m
+        write(15,*)x_m,y_m,z_m
 !$omp parallel do schedule(dynamic,1) default(none) firstprivate(x_ini,y_ini,delta_x,delta_y,resolution_x,resolution_y,x,y,r_eh) shared(particle,x_m,y_m,z_m)
     do k=1,resolution_y,1
         y=y_ini+delta_y*(float(k)-1d0)
@@ -557,7 +549,7 @@ subroutine lensing_animation(x,y,delta_x,delta_y,r_eh)
         end do
     end do
 !$omp end parallel do
-write(*,*)i
+!write(6,*)i
 !pause
     end do
     return
@@ -619,9 +611,9 @@ subroutine tracing(x,y,r_eh,particle,x_m,y_m,z_m)
             redshift=path_data(i,5)/(path_data(i,5)*t_velocity+path_data(i,6)*r_velocity+path_data(i,7)*theta_velocity+path_data(i,8)*phi_velocity)
             luminosity=luminosity+path_data(i,4)*(j_v-alpha_v*luminosity)*redshift*redshift*redshift
         end do
-        write(14,*)x,y,luminosity
+        write(16,*)x,y,luminosity
     else
-        write(14,*)x,y,0d0
+        write(16,*)x,y,0d0
     end if   
     return
     end subroutine
@@ -645,19 +637,76 @@ subroutine massive_particle_path(r_eh)
             call timestep(t_int,interval)
             call rksixth(particle,interval)
             if(particle(2).le.(r_eh+hit_error))then
-                write(*,*)"*********************************************************************"
-                write(*,*)"WARNING"
-                write(*,*)"The hot-spot is approaching event horizon!"
-                write(*,*)"Calculation stop!"
-                write(*,*)"Please change the initial conditions of the hot-spot and try again."
+                write(6,*)"*********************************************************************"
+                write(6,*)"WARNING"
+                write(6,*)"The hot-spot is approaching event horizon!"
+                write(6,*)"Calculation stop!"
+                write(6,*)"Please change the initial conditions of the hot-spot and try again."
                 stop
             else
             end if
             call spherical_transfer(particle,x_m,y_m,z_m)
         end do
         call gravitational_waves(particle(2),particle(3),particle(4),h_plus,h_cross)
-        write(13,*)x_m,y_m,z_m
-        write(16,*)dabs(t_int),h_plus,h_cross
+        write(15,*)x_m,y_m,z_m
+        write(18,*)dabs(t_int),h_plus,h_cross
     end do
     return
+    end subroutine
+    
+subroutine null_particle_path(r_eh,r_p,r_isco)
+    use accretion_disk_parameters
+    use metric_parameters
+    use particle_parameters
+    use raytracing_parameters
+    implicit none
+    real*8,dimension(8)::vector,vector0
+    real*8 x_p,y_p,z_p
+    real*8 r_eh,r_p,r_isco,step
+    integer i
+    call initial_values(x_start,y_start,vector)
+    select case(disk_model)
+    case(1)
+        r_inner=r_eh
+    case(2)
+        r_inner=r_p
+    case(3)
+        r_inner=r_isco
+    case(4)
+        r_inner=r_inner
+    end select
+    do while(.true.)
+        do i=1,sample,1
+            step=ini_step*(vector(2)/r_eh)**step_ratio
+            !call rksixth(vector,-interval)
+            call record_values(vector,vector0)
+            call rkf(vector,step)
+            if(vector(2).le.(r_eh+hit_error))then
+                write(6,*)"*********************************************************************"
+                write(6,*)"The photon is approaching event horizon!"
+                write(6,*)"Calculation stop!"
+                goto 1
+            else
+            end if
+            if(vector(2).ge.observer)then
+                write(6,*)"*********************************************************************"
+                write(6,*)"The photon is flying towards infinity!"
+                write(6,*)"Calculation stop!"
+                goto 1
+            else
+            end if
+            if(dcos(vector(3))*dcos(vector0(3)).le.0d0.and.vector(2).le.r_outer.and.vector(2).ge.r_inner)then
+                write(6,*)"*********************************************************************"
+                write(6,*)"The photon is crossing the equatorial plane!"
+                write(6,*)"Hitting position:",(vector(2)+vector0(2))/2d0
+            else
+            end if
+        end do
+        call spherical_transfer(vector,x_p,y_p,z_p)
+        if(vector(2).le.50d0)then
+            write(15,*)x_p,y_p,z_p
+        else
+        end if
+    end do
+1   return
     end subroutine
