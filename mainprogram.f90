@@ -15,18 +15,18 @@ open(1,file=file1)
 open(2,file=file2)
 open(3,file=file3)
 open(4,file=file4)
-open(5,file=file5)
-open(6,file=file6)
-open(7,file=file7)
-open(8,file=file8)
-open(9,file=file9)
-open(10,file=file10)
-open(11,file=file11)
-open(12,file=file12)
-open(13,file=file13)
-open(14,file=file14)
-open(15,file=file15)
-open(16,file=file16)
+open(7,file=file5)
+open(8,file=file6)
+open(9,file=file7)
+open(10,file=file8)
+open(11,file=file9)
+open(12,file=file10)
+open(13,file=file11)
+open(14,file=file12)
+open(15,file=file13)
+open(16,file=file14)
+open(17,file=file15)
+open(18,file=file16)
 ini_t=omp_get_wtime()
 call black_hole_features(r_eh,r_p,b_p,r_isco,angular_diameter)
 delta_x=dabs(x_end-x_ini)/(float(resolution_x)-1d0)
@@ -41,6 +41,9 @@ case(2)
     goto 1
 case(3)
     call massive_particle_path(r_eh)
+    goto 1
+case(12)
+    call null_particle_path(r_eh)
     goto 1
 end select
 !$omp parallel do schedule(dynamic,1) default(none) firstprivate(x_ini,y_ini,delta_x,delta_y,resolution_x,resolution_y,x,y,r_eh,r_isco,r_p,task_model)
@@ -70,15 +73,13 @@ do i=1,resolution_y,1
 end do
 !$omp end parallel do
 1 over_t=omp_get_wtime()
-write(*,*)"*******************************************************************************"
-write(*,*)"Cpu Cost:",dabs(over_t-ini_t),"seconds"
-write(*,*)"Program Completed"
+write(6,*)"*******************************************************************************"
+write(6,*)"Cpu Cost:",dabs(over_t-ini_t),"seconds"
+write(6,*)"Program Completed"
 close(1)
 close(2)
 close(3)
 close(4)
-close(5)
-close(6)
 close(7)
 close(8)
 close(9)
@@ -89,5 +90,7 @@ close(13)
 close(14)
 close(15)
 close(16)
+close(17)
+close(18)
 stop
-end 
+end
