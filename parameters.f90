@@ -4,8 +4,8 @@
 !-------------------------------------------------------------------------------------------!
 module metric_parameters
     implicit none
-    real*8::r_s=0.5d0
-    real*8::rho_s=0.5d0
+    real*8::r_s=0d0
+    real*8::rho_s=0d0
     real*8::math_pi=dacos(-1d0)
     end module metric_parameters   
       
@@ -31,8 +31,8 @@ module observation_parameters
     real*8::r_obs=1000d0
     real*8::theta_obs=50d0*dacos(-1d0)/180d0
     real*8::phi_obs=0d0*dacos(-1d0)/180d0
-    integer::resolution_x=1000
-    integer::resolution_y=1000
+    integer::resolution_x=100
+    integer::resolution_y=100
     real*8::x_ini=-15,x_end=15
     real*8::y_ini=-15,y_end=15
     end module observation_parameters
@@ -68,10 +68,12 @@ module particle_parameters
     real*8::phi_ini=(0d0/180d0)*dacos(-1d0)
     real*8::pt_ini=-0.972679d0
     real*8::pphi_ini=3.887002d0
+    integer::path_class=4
     real*8::interval=-0.1d0
     integer::sample=50
     integer::counts=500
-    integer::path_class=4
+    real*8::x_start=5d0
+    real*8::y_start=5d0
     end module particle_parameters
     
 module task_parameters
