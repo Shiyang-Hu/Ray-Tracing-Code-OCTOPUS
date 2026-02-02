@@ -4,8 +4,8 @@
 !-------------------------------------------------------------------------------------------!
 module metric_parameters
     implicit none
-    real*8::r_s=0d0
-    real*8::rho_s=0d0
+    real*8::r_s=0.5d0
+    real*8::rho_s=0.5d0
     real*8::math_pi=dacos(-1d0)
     end module metric_parameters   
       
@@ -31,18 +31,20 @@ module observation_parameters
     real*8::r_obs=1000d0
     real*8::theta_obs=50d0*dacos(-1d0)/180d0
     real*8::phi_obs=0d0*dacos(-1d0)/180d0
-    integer::resolution_x=100
-    integer::resolution_y=100
+    integer::resolution_x=200
+    integer::resolution_y=200
     real*8::x_ini=-15,x_end=15
     real*8::y_ini=-15,y_end=15
     end module observation_parameters
 
 module raytracing_parameters
     implicit none
-    real*8::hit_error=5d-4
+    real*8::hit_error=0.001d0
     real*8::observer=1500d0
-    real*8::ini_step=5d-4
-    real*8::step_ratio=1.8d0
+    real*8::ini_step=0.001d0
+    real*8::step_ratio=2d0
+    real*8::step_scale=25d0
+    real*8::solution_error=1d-8
     end module raytracing_parameters
 
 module accretion_disk_parameters
@@ -63,15 +65,15 @@ module lightsource_parameters
 module particle_parameters
     implicit none
     real*8::t_ini=0d0
-    real*8::r_ini=15d0
+    real*8::r_ini=14.6395820954548d0
     real*8::theta_ini=(90d0/180d0)*dacos(-1d0)
     real*8::phi_ini=(0d0/180d0)*dacos(-1d0)
-    real*8::pt_ini=-0.972679d0
-    real*8::pphi_ini=3.887002d0
-    integer::path_class=4
-    real*8::interval=-0.1d0
+    real*8::pt_ini=-0.95716766820751d0
+    real*8::pphi_ini=3.63610094219789d0
+    integer::path_class=5
+    real*8::interval=-0.01d0
     integer::sample=50
-    integer::counts=500
+    integer::counts=1000
     real*8::x_start=5d0
     real*8::y_start=5d0
     end module particle_parameters
@@ -79,5 +81,5 @@ module particle_parameters
 module task_parameters
     implicit none
     integer::task_model=8
-    integer::cpu=128
+    integer::cpu=28
     end module task_parameters
