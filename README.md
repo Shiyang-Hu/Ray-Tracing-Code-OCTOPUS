@@ -15,9 +15,9 @@ For complete implementation guidelines and theoretical background, please consul
 
 Release Notes 20260202
 
-1. A new variable, solution_error, has been added to the raytracing_parameters module. This parameter allows user-defined control over the tolerance for the adaptive step-size algorithm. Setting solution_error=1d-8 can significantly improve computational efficiency while maintaining required accuracy. Performance benchmark: Rendering a 1000*1000 image with the new error control requires only 17 seconds under full load on an Intel i7-14700 processor.
+1. A new variable, solution_error, has been added to the raytracing_parameters module. This parameter allows user-defined control over the tolerance for the adaptive step-size algorithm. Setting solution_error=1d-8 can significantly improve computational efficiency while maintaining required accuracy. Performance benchmark: Rendering a 1000*1000 image with the new error control requires only 25 seconds under full load on an Intel i7-14700 processor.
 
-2. A new method has been implemented for initializing the step size in RKF scheme. The initial step is now calculated as step = r / step_scale, where step_scale can be set to 25, 50, or 100.
+2. A new method has been implemented for initializing the step size in RKF scheme. The initial step is now calculated as step = r / step_scale, where step_scale can be set to 25, 50, 100, or 200.
 
 Release Notes 20260119
 
