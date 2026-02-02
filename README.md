@@ -13,6 +13,12 @@ To implement a new black hole model, users need to:
 For complete implementation guidelines and theoretical background, please consult our preprint at arxiv.org (2510.12585):
 “OCTOPUS: A Versatile, User-Friendly, and Extensible Public Code for General-Relativistic Ray-Tracing in Spherically Symmetric and Static Spacetimes”.
 
+Release Notes 20260202
+
+1. A new variable, solution_error, has been added to the raytracing_parameters module. This parameter allows user-defined control over the tolerance for the adaptive step-size algorithm. Setting solution_error=1d-8 can significantly improve computational efficiency while maintaining required accuracy. Performance benchmark: Rendering a 1000*1000 image with the new error control requires only 17 seconds under full load on an Intel i7-14700 processor.
+
+2. A new method has been implemented for initializing the step size in RKF scheme. The initial step is now calculated as step = r / step_scale, where step_scale can be set to 25, 50, or 100.
+
 Release Notes 20260119
 
 1. The previous version employed the Newton method to solve the event horizon equation f(r)=0 with a fixed initial guess of r=2.5. This led to failures (returning NaN) for certain black hole models where a solution could not be found. The current update implements an initial scanning step to bracket the approximate root of f(r)=0. This scan provides a physically reasonable initial guess, after which the Newton iteration proceeds.
