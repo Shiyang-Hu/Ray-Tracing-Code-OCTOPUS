@@ -59,16 +59,15 @@ return
 end subroutine
     
 subroutine rkf(u,step)
+use raytracing_parameters
 implicit none
 real*8,dimension(8)::u,u_1,u_2,eps
 real*8 max_eps
 real*8 step
-real*8 solution_error
 integer i
 u_1=0d0
 u_2=0d0
 eps=0d0
-solution_error=1d-14
 do while(.true.)
     u_1=u
     u_2=u
@@ -79,7 +78,7 @@ do while(.true.)
     end do
     max_eps=maxval(eps)
     if(max_eps.gt.solution_error)then
-        step=0.25d0*step
+        step=0.5d0*step
     else
         u=u_1
         exit
