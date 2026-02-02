@@ -43,7 +43,7 @@ module raytracing_parameters
     real*8::observer=1500d0
     real*8::ini_step=0.001d0
     real*8::step_ratio=2d0
-    real*8::step_scale=25d0
+    real*8::step_scale=50d0
     real*8::solution_error=1d-8
     end module raytracing_parameters
 
@@ -83,3 +83,4 @@ module task_parameters
     integer::task_model=8
     integer::cpu=28
     end module task_parameters
+
