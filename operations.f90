@@ -76,3 +76,12 @@ y=u(2)*dsin(u(3))*dsin(u(4))
 z=u(2)*dcos(u(3))
 return
 end subroutine
+
+subroutine change_step(r,step,r_eh)
+    use raytracing_parameters
+    implicit none
+    real*8 step,r,r_eh
+    step=r/step_scale
+    !step=ini_step*(r/r_eh)**step_ratio
+    return
+    end subroutine
