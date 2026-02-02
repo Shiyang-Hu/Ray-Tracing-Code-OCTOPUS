@@ -27,8 +27,7 @@ subroutine shadow(x_screen,y_screen,r_eh,r_p)
     real*8 step
     call initial_values(x_screen,y_screen,vector)
     do while(.true.)
-        step=ini_step*(vector(2)/r_eh)**step_ratio
-        !step=ini_step*(vector(2)/r_p)**step_ratio
+        call change_step(vector(2),step,r_eh)
         call rkf(vector,step)
         !call adjust_angle(vector(3),vector(4))
         if(vector(2).le.(r_eh+hit_error))then
@@ -53,7 +52,7 @@ subroutine hamiltonian_error(x_screen,y_screen,r_eh,r_p)
     real*8 hami
     call initial_values(x_screen,y_screen,vector)
     do while(.true.)
-        step=ini_step*(vector(2)/r_eh)**step_ratio
+        call change_step(vector(2),step,r_eh)
         call record_values(vector,vector0)
         call rkf(vector,step)
         !call adjust_angle(vector(3),vector(4))
@@ -92,7 +91,7 @@ subroutine disk_reconstruction(x_screen,y_screen,r_eh,r_p,r_isco)
         r_inner=r_inner
     end select
     do while(.true.)
-        step=ini_step*(vector(2)/r_eh)**step_ratio
+        call change_step(vector(2),step,r_eh)
         call record_values(vector,vector0)
         call rkf(vector,step)
         call adjust_angle(vector(3),vector(4))
@@ -124,7 +123,7 @@ subroutine lensing(x_screen,y_screen,r_eh)
     real*8 x,y,z,x0,y0,z0
     call initial_values(x_screen,y_screen,vector)
     do while(.true.)
-        step=ini_step*(vector(2)/r_eh)**step_ratio
+        call change_step(vector(2),step,r_eh)
         call record_values(vector,vector0)
         call rkf(vector,step)
         call adjust_angle(vector(3),vector(4))
@@ -176,7 +175,7 @@ subroutine hit_times(x_screen,y_screen,r_eh,r_p,r_isco)
         r_inner=r_inner
     end select
     do while(.true.)
-        step=ini_step*(vector(2)/r_eh)**step_ratio
+        call change_step(vector(2),step,r_eh)
         call record_values(vector,vector0)
         call rkf(vector,step)
         !call adjust_angle(vector(3),vector(4))
@@ -219,7 +218,7 @@ subroutine redshift_factor(x_screen,y_screen,r_eh,r_p,r_isco)
         r_inner=r_inner
     end select
     do while(.true.)
-        step=ini_step*(vector(2)/r_eh)**step_ratio
+        call change_step(vector(2),step,r_eh)
         call record_values(vector,vector0)
         call rkf(vector,step)
         call adjust_angle(vector(3),vector(4))
@@ -287,7 +286,7 @@ subroutine image(x_screen,y_screen,r_eh,r_p,r_isco)
         r_inner=r_inner
     end select
     do while(.true.)
-        step=ini_step*(vector(2)/r_eh)**step_ratio
+        call change_step(vector(2),step,r_eh)
         call record_values(vector,vector0)
         call rkf(vector,step)
         call adjust_angle(vector(3),vector(4))
@@ -435,7 +434,7 @@ subroutine geodesic_tracing(x,y,r_eh,path_data,r_max,r_min)
     photon_0=0d0
     call initial_values(x,y,photon)
     do while(.true.)
-        step=ini_step*(photon(2)/r_eh)**step_ratio
+        call change_step(photon(2),step,r_eh)
         call record_values(photon,photon_0)
         call rkf(photon,step)
         if(photon(2).le.(r_eh+hit_error))exit
@@ -482,7 +481,7 @@ subroutine lensing_image(x_screen,y_screen,r_eh)
     call initial_values(x_screen,y_screen,vector)
     do while(.true.)
         step_0=step
-        step=ini_step*(vector(2)/r_eh)**step_ratio
+        call change_step(vector(2),step,r_eh)
         call record_values(vector,vector0)
         call rkf(vector,step)
         if(vector(2).le.(r_eh+hit_error))exit
@@ -577,7 +576,7 @@ subroutine tracing(x,y,r_eh,particle,x_m,y_m,z_m)
     path_data=0d0
     call initial_values(x,y,vector)
     do while(.true.)
-        step=ini_step*(vector(2)/r_eh)**step_ratio
+        call change_step(vector(2),step,r_eh)
         call record_values(vector,vector0)
         call rkf(vector,step)
         if(vector(2).le.(r_eh+hit_error))exit
@@ -677,7 +676,7 @@ subroutine null_particle_path(r_eh,r_p,r_isco)
     end select
     do while(.true.)
         do i=1,sample,1
-            step=ini_step*(vector(2)/r_eh)**step_ratio
+            call change_step(vector(2),step,r_eh)
             !call rksixth(vector,-interval)
             call record_values(vector,vector0)
             call rkf(vector,step)
